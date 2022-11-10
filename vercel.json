@@ -3,6 +3,6 @@
     {
       "source": "/api/otps",
       "destination": "/api/otps"
-    },
+    }
   ]
 }
