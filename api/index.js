@@ -47,7 +47,7 @@ server.post('/verifyOtp', (req, res) => {
 })
 
 server.use(router)
-server.listen(3000, () => {
+server.listen(4634, () => {
     console.log('JSON Server is running')
 })
 
