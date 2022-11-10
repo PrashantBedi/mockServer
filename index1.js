@@ -1,6 +1,5 @@
 const jsonServer = require('json-server')
 const server = jsonServer.create()
-// const data = {"otps": []}
 const router = jsonServer.router('./db.json')
 const middlewares = jsonServer.defaults()
 const data = require('./db.json')
