@@ -1,12 +1,2 @@
 {
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api"
-    },
-    {
-      "source": "/otps",
-      "destination": "/otps"
-    }
-  ]
 }
