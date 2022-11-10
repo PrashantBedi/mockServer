@@ -1,16 +1,12 @@
 {
   "users": [
     {
-      "id": "",
+      "id": 1,
       "detail": {},
-      "token": ""
+      "token": "asbilufv232gf"
     }
   ],
   "otps": [
-    {
-      "phone_no": "",
-      "otp": ""
-    },
     {
       "phone_no": "823972131",
       "otp": "72131"

@@ -5,14 +5,7 @@ const middlewares = jsonServer.defaults()
 const data = require('../db.json')
 
 server.use(middlewares)
-// server.use((req, res, next) => {
-//     //  if (isAuthorized(req)) { // add your authorization logic here
-//     if (true) {
-//         next() // continue to JSON Server router
-//     } else {
-//         res.sendStatus(401)
-//     }
-// })
+
 server.use(jsonServer.bodyParser)
 
 function writeToDB() {
