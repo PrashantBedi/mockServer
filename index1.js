@@ -20,6 +20,12 @@ function writeToDB() {
     router.db.write()
 }
 
+server.get('/', (req, res) => {
+    res.jsonp({
+        "message": "Success"
+    })
+})
+
 server.post('/sendOtp', (req, res) => {
     var otp = req.body.phone_no.slice(-5)
     data.otps.push({phone_no: req.body.phone_no, otp: otp})
