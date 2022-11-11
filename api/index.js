@@ -14,6 +14,12 @@ function writeToDB() {
 }
 
 server.post('/sendOtp', (req, res) => {
+    var index = data.otps.findIndex((otp) => otp.phone_no == req.body.phone_no)
+
+    if(index != -1) {
+        res.sendStatus(422)
+    }
+
     var otp = req.body.phone_no.slice(-5)
     data.otps.push({phone_no: req.body.phone_no, otp: otp})
     writeToDB();
