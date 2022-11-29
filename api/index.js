@@ -3,8 +3,7 @@ const server = jsonServer.create();
 const router = jsonServer.router("./db.json");
 const middlewares = jsonServer.defaults();
 const data = require("../db.json");
-const accessToken =
-  "eyJhbGciOiJIUzI1NiJ9.eyJVc2VybmFtZSI6Im1vdW50ZWJhbmt1c2VyIiwiZXhwIjozODY1MDQ0MzUzLCJpYXQiOjE2NTU5NjkxNTN9.TNATKPexdfrWv4v6nSFsb08Uinsqic03oQCHZ6VeASI";
+
 server.use(middlewares);
 
 server.use(jsonServer.bodyParser);
@@ -13,6 +12,31 @@ function writeToDB() {
   router.db.setState(data);
   router.db.write();
 }
+
+const isAuthorized = (req) => {
+  if (req.headers.authorization) {
+    const token = req.headers.authorization.split("Bearer ").pop();
+    const index = data.users.findIndex((user) => user.token === token);
+    if (index === -1) {
+      return false;
+    }
+    const user = { ...data.users[index] };
+    delete user.password;
+    delete user.token;
+    return user;
+  }
+};
+
+server.use("/api", (req, res, next) => {
+  const user = isAuthorized(req);
+  if (user) {
+    req.user = user;
+    // add your authorization logic here
+    next(); // continue to JSON Server router
+  } else {
+    res.sendStatus(401);
+  }
+});
 
 server.post("/sendOtp", (req, res) => {
   var index = data.otps.findIndex((otp) => otp.phone_no == req.body.phone_no);
@@ -64,11 +88,21 @@ server.post("/login", (req, res) => {
     if (data.users[index].password === password) {
       const user = { ...data.users[index] };
       delete user.password;
+      delete user.token;
+      const accessToken = btoa(
+        `${Object.values(user)}${Math.random() * 9999999}`
+      );
+      data.users[index].token = accessToken;
+      writeToDB();
       return res.status(200).jsonp({ accessToken, user });
     }
     return res.status(401).send("Incorrect password !");
   }
   return res.status(401).send("Invalid user detais");
+});
+
+server.get("/api/user", (req, res) => {
+  return res.status(200).jsonp(req.user);
 });
 
 server.use(router);
