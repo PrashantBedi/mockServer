@@ -3,7 +3,8 @@ const server = jsonServer.create();
 const router = jsonServer.router("./db.json");
 const middlewares = jsonServer.defaults();
 const data = require("../db.json");
-
+const accessToken =
+  "eyJhbGciOiJIUzI1NiJ9.eyJVc2VybmFtZSI6Im1vdW50ZWJhbmt1c2VyIiwiZXhwIjozODY1MDQ0MzUzLCJpYXQiOjE2NTU5NjkxNTN9.TNATKPexdfrWv4v6nSFsb08Uinsqic03oQCHZ6VeASI";
 server.use(middlewares);
 
 server.use(jsonServer.bodyParser);
@@ -60,8 +61,11 @@ server.post("/login", (req, res) => {
     if (index == -1) {
       return res.status(404).send("Entered number is not registred yet");
     }
-    if (data.users[index].password === password)
-      return res.status(200).jsonp({ message: "Validation successfull" });
+    if (data.users[index].password === password) {
+      const user = { ...data.users[index] };
+      delete user.password;
+      return res.status(200).jsonp({ accessToken, user });
+    }
     return res.status(401).send("Incorrect password !");
   }
   return res.status(401).send("Invalid user detais");
