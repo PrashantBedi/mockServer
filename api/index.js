@@ -44,13 +44,11 @@ server.post("/validate/mobile", (req, res) => {
   if (phone_no) {
     let index = data.users.findIndex((user) => user.phone_no == phone_no);
     if (index == -1) {
-      return res
-        .status(404)
-        .jsonp({ message: "Entered number is not registred yet" });
+      return res.status(404).send("Entered number is not registred yet");
     }
     return res.status(200).jsonp({ message: "Validation successfull" });
   }
-  return res.status(401).jsonp({ message: "Invalid number" });
+  return res.status(401).send("Invalid number");
 });
 
 server.use(router);
