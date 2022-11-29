@@ -3,7 +3,9 @@
     {
       "id": 1,
       "detail": {},
-      "token": "asbilufv232gf"
+      "token": "asbilufv232gf",
+      "phone_no": "1111111111",
+      "password": "abcd@123"
     }
   ],
   "otps": [

@@ -51,6 +51,22 @@ server.post("/validate/mobile", (req, res) => {
   return res.status(401).send("Invalid number");
 });
 
+server.post("/login", (req, res) => {
+  const phone_no = req.body.phone_no;
+  const password = req.body.password;
+
+  if (phone_no && password) {
+    let index = data.users.findIndex((user) => user.phone_no == phone_no);
+    if (index == -1) {
+      return res.status(404).send("Entered number is not registred yet");
+    }
+    if (data.users[index].password === password)
+      return res.status(200).jsonp({ message: "Validation successfull" });
+    return res.status(401).send("Incorrect password !");
+  }
+  return res.status(401).send("Invalid user detais");
+});
+
 server.use(router);
 server.listen(process.env.PORT || 3001, () => {
   console.log("JSON Server is running");
