@@ -1,8 +1,8 @@
 const jsonServer = require("json-server");
 const server = jsonServer.create();
-const router = jsonServer.router("./db.json");
+const router = jsonServer.router(require("../db.js"));
 const middlewares = jsonServer.defaults();
-const data = require("../db.json");
+const data = require("../db.js");
 
 server.use(middlewares);
 
@@ -11,6 +11,10 @@ server.use(jsonServer.bodyParser);
 function writeToDB() {
   router.db.setState(data);
   router.db.write();
+}
+
+function paginate(array, page_size, page_number) {
+  return array.slice((page_number - 1) * page_size, page_number * page_size);
 }
 
 const isAuthorized = (req) => {
@@ -103,6 +107,41 @@ server.post("/login", (req, res) => {
 
 server.get("/api/user", (req, res) => {
   return res.status(200).jsonp(req.user);
+});
+
+server.get("/api/accounts", (req, res) => {
+  const usersAccounts =
+    data.accounts.filter((acc) => acc.user_id === req.user.id) || [];
+  return res.status(200).jsonp(usersAccounts);
+});
+
+server.get("/api/accounts/:id/transactions", (req, res) => {
+  const accountId = parseInt(req.params.id);
+  const userId = parseInt(req.user.id);
+  const accountIndex = data.accounts.findIndex(
+    (acc) => acc.user_id === userId && acc.id === accountId
+  );
+  if (accountIndex === -1) {
+    return res.status(404).send("Account not exist");
+  }
+  const query = req.query;
+  let page = 1,
+    pageSize = 10;
+  if (query.page > 1) {
+    page = query.page;
+  }
+  if (query.count) {
+    pageSize = query.pageSize;
+  }
+  const allTransactions =
+    data.transactions.filter(
+      (transaction) =>
+        transaction.user_id === userId && transaction.account_id === accountId
+    ) || [];
+  return res.status(200).jsonp({
+    data: paginate(allTransactions, pageSize, page),
+    total: allTransactions.length,
+  });
 });
 
 server.use(router);

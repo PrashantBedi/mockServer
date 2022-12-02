@@ -17,5 +17,23 @@
       "phone_no": "823972132",
       "otp": "72132"
     }
+  ],
+  "accounts": [
+    {
+      "id": 1,
+      "user_id": 1,
+      "bank_name": "SBI",
+      "account_type": "Savings",
+      "account_number": "6098587393",
+      "balance": "10000.00"
+    },
+    {
+      "id": 2,
+      "user_id": 1,
+      "bank_name": "823972131",
+      "account_type": "Savings",
+      "account_number": "6098587965",
+      "balance": "43675.00"
+    }
   ]
 }
