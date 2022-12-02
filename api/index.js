@@ -130,7 +130,7 @@ server.get("/api/accounts/:id/transactions", (req, res) => {
   if (query.page > 1) {
     page = query.page;
   }
-  if (query.count) {
+  if (query.pageSize) {
     pageSize = query.pageSize;
   }
   const allTransactions =
