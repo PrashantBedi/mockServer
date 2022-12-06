@@ -1,8 +1,8 @@
 const jsonServer = require("json-server");
 const server = jsonServer.create();
-const router = jsonServer.router(require("../db.js"));
+const router = jsonServer.router(require("./db.js"));
 const middlewares = jsonServer.defaults();
-const data = require("../db.js");
+const data = require("./db.js");
 
 server.use(middlewares);
 
@@ -172,4 +172,4 @@ server.listen(process.env.PORT || 3001, () => {
   console.log("JSON Server is running");
 });
 
-module.export = server;
+module.exports = server;
