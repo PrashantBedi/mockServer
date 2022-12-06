@@ -114,7 +114,11 @@ server.get("/api/accounts", (req, res) => {
     data.accounts.filter((acc) => acc.user_id === req.user.id) || [];
   return res.status(200).jsonp(usersAccounts);
 });
-
+server.use(
+  jsonServer.rewriter({
+    "/api/accounts/:id": "/accounts/:id",
+  })
+);
 server.get("/api/accounts/:id/transactions", (req, res) => {
   const accountId = parseInt(req.params.id);
   const userId = parseInt(req.user.id);
@@ -126,18 +130,37 @@ server.get("/api/accounts/:id/transactions", (req, res) => {
   }
   const query = req.query;
   let page = 1,
-    pageSize = 10;
+    pageSize = 10,
+    filterBy = null,
+    filterValue = null;
   if (query.page > 1) {
     page = query.page;
   }
   if (query.pageSize) {
     pageSize = query.pageSize;
   }
+  if (["is_debit", "status"].includes(query.filterBy) && query.filterValue) {
+    filterBy = query.filterBy;
+    if (query.filterBy === "is_debit") {
+      filterValue = query.filterValue === "true" ? true : false;
+    } else {
+      filterValue = query.filterValue;
+    }
+  }
   const allTransactions =
-    data.transactions.filter(
-      (transaction) =>
-        transaction.user_id === userId && transaction.account_id === accountId
-    ) || [];
+    data.transactions.filter((transaction) => {
+      if (
+        transaction.user_id === userId &&
+        transaction.account_id === accountId
+      ) {
+        if (filterBy && filterValue !== null) {
+          return transaction[filterBy] === filterValue;
+        } else {
+          return true;
+        }
+      }
+      return false;
+    }) || [];
   return res.status(200).jsonp({
     data: paginate(allTransactions, pageSize, page),
     total: allTransactions.length,

@@ -23,17 +23,19 @@
       "id": 1,
       "user_id": 1,
       "bank_name": "SBI",
+      "holder_name": "David Warner Joe",
       "account_type": "Savings",
       "account_number": "6098587393",
-      "balance": "10000.00"
+      "balance": 10000.0
     },
     {
       "id": 2,
       "user_id": 1,
-      "bank_name": "823972131",
+      "bank_name": "HDFC",
+      "holder_name": "Vernon Dursley",
       "account_type": "Savings",
       "account_number": "6098587965",
-      "balance": "43675.00"
+      "balance": 43675.0
     }
   ]
 }
