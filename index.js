@@ -8,10 +8,6 @@ server.use(middlewares);
 
 server.use(jsonServer.bodyParser);
 
-function refreshData() {
-  data = require("./db.js");
-}
-
 function writeToDB() {
   router.db.setState(data);
   router.db.write();
@@ -36,7 +32,6 @@ const isAuthorized = (req) => {
 };
 
 server.use("/api", (req, res, next) => {
-  refreshData();
   const user = isAuthorized(req);
   if (user) {
     req.user = user;
