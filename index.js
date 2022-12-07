@@ -2,11 +2,15 @@ const jsonServer = require("json-server");
 const server = jsonServer.create();
 const router = jsonServer.router(require("./db.js"));
 const middlewares = jsonServer.defaults();
-const data = require("./db.js");
+let data = require("./db.js");
 
 server.use(middlewares);
 
 server.use(jsonServer.bodyParser);
+
+function refreshData() {
+  data = require("./db.js");
+}
 
 function writeToDB() {
   router.db.setState(data);
@@ -32,6 +36,7 @@ const isAuthorized = (req) => {
 };
 
 server.use("/api", (req, res, next) => {
+  refreshData();
   const user = isAuthorized(req);
   if (user) {
     req.user = user;
