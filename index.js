@@ -107,6 +107,18 @@ server.post("/signup", (req, res) => {
     res.status(200).send("Signup Successful");
 });
 
+server.get("/api/search",(req,res)=>{
+    let searchText=req.query.text.toLowerCase();
+    let mobileOnly=req.query.mobileOnly === 'true';
+    let filteredList=data.users.filter((user)=>{
+        if(!mobileOnly){
+            return (user.name.toLowerCase().includes(searchText)|| user.upi.toLowerCase().includes(searchText) || user.phone_no.toLowerCase().includes(searchText));
+        }
+      return user.phone_no.includes(searchText);
+    });
+    return res.status(200).send(filteredList);
+
+})
 server.post("/verifyOtp", (req, res) => {
     let index = data.otps.findIndex((otp) => otp.phone_no == req.body.phone_no);
 
