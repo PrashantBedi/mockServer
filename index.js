@@ -145,9 +145,9 @@ server.post("/login", (req, res) => {
             const user = {...data.users[index]};
             delete user.password;
             delete user.token;
-            const accessToken = btoa(
+            const accessToken = Buffer.from(
                 `${Object.values(user)}${Math.random() * 9999999}`
-            );
+            ).toString('base64');
             data.users[index].token = accessToken;
             writeToDB();
             return res.status(200).jsonp({accessToken, user});
