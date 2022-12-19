@@ -108,7 +108,7 @@ server.post("/signup", (req, res) => {
 });
 
 server.get("/api/search",(req,res)=>{
-    let searchText=req.query.text.toLowerCase();
+    let searchText=req.query.text?.toLowerCase() || '';
     let mobileOnly=req.query.mobileOnly === 'true';
     let filteredList=data.users.filter((user)=>{
         if(!mobileOnly){
