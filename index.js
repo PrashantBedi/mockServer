@@ -150,8 +150,8 @@ server.post("/validate/mobile", (req, res) => {
   return res.status(401).send("Invalid number");
 });
 
-server.post("api/validate/upi", (req, res) => {
-  const upi = req.body.upi;
+server.get("api/validate/upi", (req, res) => {
+  const upi = req.query.upi?.toLowerCase();
   if (upi) {
     let index = data.users.findIndex((user) => user.upi == upi);
     if (index == -1) {
