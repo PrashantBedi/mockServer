@@ -113,18 +113,38 @@ server.post("/signup", (req, res) => {
 server.get("/api/search", (req, res) => {
   let searchText = req.query.text?.toLowerCase() || "";
   let mobileOnly = req.query.mobileOnly === "true";
-  let filteredList = data.users.filter((user) => {
-    if (!mobileOnly) {
-      return (
-        user.name.toLowerCase().includes(searchText) ||
-        user.upi.toLowerCase().includes(searchText) ||
-        user.phone_no.toLowerCase().includes(searchText)
-      );
+  let filteredList = [];
+  data.users.forEach((user) => {
+    if (!mobileOnly && user.upi.toLowerCase().includes(searchText)) {
+      filteredList.push({
+        id: user.id,
+        name: user.name,
+        phone_no: user.phone_no,
+        upi: user.upi,
+        fieldName: "upi",
+      });
+    } else if (user.phone_no.toLowerCase().includes(searchText)) {
+      filteredList.push({
+        id: user.id,
+        name: user.name,
+        phone_no: user.phone_no,
+        upi: user.upi,
+        fieldName: "phone_no",
+      });
+    } else if (!mobileOnly && user.name.toLowerCase().includes(searchText)) {
+      filteredList.push({
+        id: user.id,
+        name: user.name,
+        phone_no: user.phone_no,
+        upi: user.upi,
+        fieldName: "upi",
+      });
     }
-    return user.phone_no.includes(searchText);
   });
+
   return res.status(200).send(filteredList);
 });
+
 server.post("/verifyOtp", (req, res) => {
   let index = data.otps.findIndex((otp) => otp.phone_no == req.body.phone_no);
 
@@ -150,7 +170,7 @@ server.post("/validate/mobile", (req, res) => {
   return res.status(401).send("Invalid number");
 });
 
-server.get("api/validate/upi", (req, res) => {
+server.get("/api/validate/upi", (req, res) => {
   const upi = req.query.upi?.toLowerCase();
   if (upi) {
     let index = data.users.findIndex((user) => user.upi == upi);
