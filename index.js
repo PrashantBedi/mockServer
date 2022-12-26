@@ -145,6 +145,36 @@ server.get("/api/search", (req, res) => {
   return res.status(200).send(filteredList);
 });
 
+server.get("/api/getTransactions", (req, res) => {
+  let getPayeeUpi = req.query.payeeUpi;
+  let getUserId = req.user.id;
+  const payee_user_index=data.users.findIndex((user)=>user.upi===getPayeeUpi);
+  const payee_id=data.users[payee_user_index].id;
+  let filteredList=[];
+
+  data.transactions.forEach((transaction)=>{
+    if(transaction.payee_id===payee_id && transaction.user_id===getUserId){
+      filteredList.push({
+        note:transaction.note,
+        amount:transaction.amount,
+        status:transaction.status,
+        isPayee:false,
+      });
+    }
+    else if(transaction.user_id===payee_id && transaction.payee_id===getUserId){
+      filteredList.push({
+        note:transaction.note,
+        amount:transaction.amount,
+        status:transaction.status,
+        isPayee:true,
+      })
+    }
+  });
+
+  return res.status(200).send(filteredList);
+
+});
+
 server.post("/verifyOtp", (req, res) => {
   let index = data.otps.findIndex((otp) => otp.phone_no == req.body.phone_no);
 
@@ -157,8 +187,8 @@ server.post("/verifyOtp", (req, res) => {
     res.status(401).jsonp({ message: "Invalid OTP" });
   }
 });
+
 server.post("/api/sendMoney", (req, res) => {
-  
   const user_id=req.user.id;
   const payee_upi=req.body.payee_upi;
   const amount=req.body.amount;
@@ -223,6 +253,7 @@ server.post("/api/sendMoney", (req, res) => {
   }
   return res.status(401).send("Request Declined");
 });
+
 
 server.post("/validate/mobile", (req, res) => {
   const phone_no = req.body.phone_no;
