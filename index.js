@@ -157,6 +157,72 @@ server.post("/verifyOtp", (req, res) => {
     res.status(401).jsonp({ message: "Invalid OTP" });
   }
 });
+server.post("/api/sendMoney", (req, res) => {
+  
+  const user_id=req.user.id;
+  const payee_upi=req.body.payee_upi;
+  const amount=req.body.amount;
+  if(user_id && payee_upi){
+
+    //find_user_index_in_accountsDB
+    let user_index=data.accounts.findIndex((account)=>account.user_id === user_id);
+
+    if(user_index===-1){
+      return res.status(404).send("Entered bank number is invalid");
+    }
+
+    //find_payee_id
+    let payee_index_id=data.users.findIndex((user)=>user.upi===payee_upi);
+
+    //find_payee_index_in_accountsDB
+    let payee_index=data.accounts.findIndex((account)=>account.user_id === data.users[payee_index_id].id);
+
+    if(payee_index===-1){
+      return res.status(404).send("No bank account present with the entered details");
+    }
+
+    let user_account_balance= parseFloat(data.accounts[user_index].balance);
+    if(user_account_balance<amount){
+      const transaction ={
+        "id": data.transactions.length+1,
+        "user_account_id": data.accounts[user_index].id,
+        "user_id": user_id,
+        "payee_account_id": data.accounts[payee_index].id,
+        "payee_id": data.users[payee_index_id].id,
+        "payee_name": data.users[payee_index_id].name,
+        "date": Date.now(),
+        "amount": amount,
+        "status": "Failed",
+        "is_debit": true
+      }
+      data.transactions.push(transaction);
+      writeToDB();
+      return res.status(404).send("Insufficient Balance");
+    }
+    let payee_account_balance=""+(parseFloat(data.accounts[payee_index].balance)+amount);
+
+    data.accounts[user_index].balance = ""+(user_account_balance-amount);
+    data.accounts[payee_index].balance = payee_account_balance;
+
+    const transaction ={
+      "id": data.transactions.length+1,
+      "user_account_id": data.accounts[user_index].id,
+      "user_id": user_id,
+      "payee_account_id": data.accounts[payee_index].id,
+      "payee_id": data.users[payee_index_id].id,
+      "payee_name": data.users[payee_index_id].name,
+      "date": Date.now(),
+      "amount": amount,
+      "status": "Successful",
+      "is_debit": true
+    }
+    data.transactions.push(transaction);
+    writeToDB();
+    return res.status(200).send("Sent Successfully");
+
+  }
+  return res.status(401).send("Request Declined");
+});
 
 server.post("/validate/mobile", (req, res) => {
   const phone_no = req.body.phone_no;
