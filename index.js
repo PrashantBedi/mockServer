@@ -354,7 +354,7 @@ server.get("/api/accounts/:id/transactions", (req, res) => {
     data.transactions.filter((transaction) => {
       if (
         transaction.user_id === userId &&
-        transaction.account_id === accountId
+        transaction.user_account_id === accountId
       ) {
         if (filterBy && filterValue !== null) {
           return transaction[filterBy] === filterValue;
