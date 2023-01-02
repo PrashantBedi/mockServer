@@ -146,7 +146,9 @@ server.get("/api/search", (req, res) => {
 });
 
 server.get("/api/getTransactions", (req, res) => {
-  let getPayeeUpi = req.query.payeeUpi;
+
+  let PayeeUpi = req.query.payeeUpi;
+  let getPayeeUpi=decodeURIComponent(PayeeUpi);
   let getUserId = req.user.id;
   const payee_user_index=data.users.findIndex((user)=>user.upi===getPayeeUpi);
   const payee_id=data.users[payee_user_index].id;
