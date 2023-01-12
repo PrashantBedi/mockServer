@@ -296,14 +296,11 @@ server.post("/login", (req, res) => {
       const user = { ...data.users[index] };
       delete user.password;
       let accessToken;
-      console.log("--> " + user.token)
       if (!user.token) {
-        console.log("In if--> " + user.token)
         accessToken = Buffer.from(
             `${Object.values(user)}${Math.random() * 9999999}`
         ).toString("base64");
       } else {
-        console.log("in else --> " + user.token)
         accessToken = user.token;
       }
       data.users[index].token = accessToken;
