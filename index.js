@@ -105,6 +105,7 @@ server.post("/signup", (req, res) => {
       balance: getRandomInt(1, 100000),
     }
   );
+
   writeToDB();
 
   res.status(200).send("Signup Successful");
@@ -330,7 +331,9 @@ server.get("/api/accounts/:id/transactions", (req, res) => {
   const accountId = parseInt(req.params.id);
   const userId = parseInt(req.user.id);
   const accountIndex = data.accounts.findIndex(
-    (acc) => acc.user_id === userId && acc.id === accountId
+    (acc) => {
+    return acc.user_id === userId && acc.id === accountId
+  }
   );
   if (accountIndex === -1) {
     return res.status(404).send("Account not exist");
