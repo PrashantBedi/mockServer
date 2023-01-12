@@ -24,18 +24,15 @@ function getRandomInt(min, max) {
 }
 
 const isAuthorized = (req) => {
-  console.log("Auth Token " + req.headers.authorization)
   if (req.headers.authorization) {
     const token = req.headers.authorization.split("Bearer ").pop();
     const index = data.users.findIndex((user) => user.token === token);
-    console.log("User Index " + index)
     if (index === -1) {
       return false;
     }
     const user = { ...data.users[index] };
     delete user.password;
     delete user.token;
-    console.log("User Details: " + user.toString())
     return user;
   }
 };
@@ -298,10 +295,17 @@ server.post("/login", (req, res) => {
     if (data.users[index].password === password) {
       const user = { ...data.users[index] };
       delete user.password;
-      delete user.token;
-      const accessToken = Buffer.from(
-        `${Object.values(user)}${Math.random() * 9999999}`
-      ).toString("base64");
+      let accessToken;
+      console.log("--> " + user.token)
+      if (!user.token) {
+        console.log("In if--> " + user.token)
+        accessToken = Buffer.from(
+            `${Object.values(user)}${Math.random() * 9999999}`
+        ).toString("base64");
+      } else {
+        console.log("in else --> " + user.token)
+        accessToken = user.token;
+      }
       data.users[index].token = accessToken;
       writeToDB();
       return res.status(200).jsonp({ accessToken, user });
