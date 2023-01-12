@@ -8,6 +8,15 @@
       "dob": "19/12/1998",
       "name": "David Warner Joe",
       "upi": "1111111111@okaxis"
+    },
+    {
+      "id": 2,
+      "phone_no": "9753197531",
+      "password": "abcd@123",
+      "dob": "01/12/1997",
+      "name": "John Wick",
+      "upi": "9753197531@okaxis",
+      "token": "Miw5NzUzMTk3NTMxLDAxLzEyLzE5OTcsSm9obiBXaWNrLDk3NTMxOTc1MzFAb2theGlzNDU4NTMxMy40NTA4NzI2Nw=="
     }
   ],
   "otps": [
@@ -34,10 +43,28 @@
       "id": 2,
       "user_id": 1,
       "bank_name": "HDFC",
-      "holder_name": "Vernon Dursley",
+      "holder_name": "David Warner Joe",
       "account_type": "Savings",
       "account_number": "6098587965",
       "balance": 43675.0
+    },
+    {
+      "id": 3,
+      "user_id": 2,
+      "bank_name": "SBI",
+      "holder_name": "John Wick",
+      "account_type": "Savings",
+      "account_number": "60985879652",
+      "balance": 13684
+    },
+    {
+      "id": 4,
+      "user_id": 2,
+      "bank_name": "HDFC",
+      "holder_name": "John Wick",
+      "account_type": "Savings",
+      "account_number": "60985879653",
+      "balance": 30576
     }
   ]
 }
