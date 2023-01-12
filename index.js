@@ -231,9 +231,9 @@ server.post("/api/sendMoney", (req, res) => {
       writeToDB();
       return res.status(404).send("Insufficient Balance");
     }
-    let payee_account_balance=""+(parseFloat(data.accounts[payee_index].balance)+amount);
+    let payee_account_balance=parseFloat(data.accounts[payee_index].balance)+amount;
 
-    data.accounts[user_index].balance = ""+(user_account_balance-amount);
+    data.accounts[user_index].balance = user_account_balance-amount;
     data.accounts[payee_index].balance = payee_account_balance;
 
     const transaction ={
