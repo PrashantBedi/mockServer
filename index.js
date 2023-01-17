@@ -377,6 +377,16 @@ server.get("/api/accounts/:id/transactions", (req, res) => {
   });
 });
 
+server.get("/api/transactions/:id/requested",(req,res)=>{
+  const accountId = parseInt(req.params.id);
+  const list = data.requests.filter((r)=>{
+    return r.requested_to_user_id === accountId;
+  }) || [];
+  return res.status(200).jsonp({
+    list
+  });
+});
+
 server.use(router);
 server.listen(process.env.PORT || 3001, () => {
   console.log("JSON Server is running");
