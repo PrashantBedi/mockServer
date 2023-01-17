@@ -382,9 +382,7 @@ server.get("/api/transactions/:id/requested",(req,res)=>{
   const list = data.requests.filter((r)=>{
     return r.requested_to_user_id === accountId;
   }) || [];
-  return res.status(200).jsonp({
-    list
-  });
+  return res.status(200).jsonp(list);
 });
 
 server.use(router);
