@@ -377,10 +377,10 @@ server.get("/api/accounts/:id/transactions", (req, res) => {
   });
 });
 
-server.get("/api/transactions/:id/requested",(req,res)=>{
-  const accountId = parseInt(req.params.id);
+server.get("/api/payment/requested",(req,res)=>{
+  const userId = req.user.id;
   const list = data.requests.filter((r)=>{
-    return r.requested_to_user_id === accountId;
+    return r.requested_to_user_id === userId;
   }) || [];
   return res.status(200).jsonp(list);
 });
