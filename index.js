@@ -147,35 +147,40 @@ server.get("/api/search", (req, res) => {
 });
 
 server.get("/api/getTransactions", (req, res) => {
-
   let PayeeUpi = req.query.payeeUpi;
-  let getPayeeUpi=decodeURIComponent(PayeeUpi);
+  let getPayeeUpi = decodeURIComponent(PayeeUpi);
   let getUserId = req.user.id;
-  const payee_user_index=data.users.findIndex((user)=>user.upi===getPayeeUpi);
-  const payee_id=data.users[payee_user_index].id;
-  let filteredList=[];
+  const payee_user_index = data.users.findIndex(
+    (user) => user.upi === getPayeeUpi
+  );
+  const payee_id = data.users[payee_user_index].id;
+  let filteredList = [];
 
-  data.transactions.forEach((transaction)=>{
-    if(transaction.payee_id===payee_id && transaction.user_id===getUserId){
+  data.transactions.forEach((transaction) => {
+    if (
+      transaction.payee_id === payee_id &&
+      transaction.user_id === getUserId
+    ) {
       filteredList.push({
-        note:transaction.note,
-        amount:transaction.amount,
-        status:transaction.status,
-        isPayee:false,
+        note: transaction.note,
+        amount: transaction.amount,
+        status: transaction.status,
+        isPayee: false,
       });
-    }
-    else if(transaction.user_id===payee_id && transaction.payee_id===getUserId){
+    } else if (
+      transaction.user_id === payee_id &&
+      transaction.payee_id === getUserId
+    ) {
       filteredList.push({
-        note:transaction.note,
-        amount:transaction.amount,
-        status:transaction.status,
-        isPayee:true,
-      })
+        note: transaction.note,
+        amount: transaction.amount,
+        status: transaction.status,
+        isPayee: true,
+      });
     }
   });
 
   return res.status(200).send(filteredList);
-
 });
 
 server.post("/verifyOtp", (req, res) => {
@@ -192,71 +197,75 @@ server.post("/verifyOtp", (req, res) => {
 });
 
 server.post("/api/sendMoney", (req, res) => {
-  const user_id=req.user.id;
-  const payee_upi=req.body.payee_upi;
-  const amount=req.body.amount;
-  if(user_id && payee_upi){
-
+  const user_id = req.user.id;
+  const payee_upi = req.body.payee_upi;
+  const amount = req.body.amount;
+  if (user_id && payee_upi) {
     //find_user_index_in_accountsDB
-    let user_index=data.accounts.findIndex((account)=>account.user_id === user_id);
+    let user_index = data.accounts.findIndex(
+      (account) => account.user_id === user_id
+    );
 
-    if(user_index===-1){
+    if (user_index === -1) {
       return res.status(404).send("Entered bank number is invalid");
     }
 
     //find_payee_id
-    let payee_index_id=data.users.findIndex((user)=>user.upi===payee_upi);
+    let payee_index_id = data.users.findIndex((user) => user.upi === payee_upi);
 
     //find_payee_index_in_accountsDB
-    let payee_index=data.accounts.findIndex((account)=>account.user_id === data.users[payee_index_id].id);
+    let payee_index = data.accounts.findIndex(
+      (account) => account.user_id === data.users[payee_index_id].id
+    );
 
-    if(payee_index===-1){
-      return res.status(404).send("No bank account present with the entered details");
+    if (payee_index === -1) {
+      return res
+        .status(404)
+        .send("No bank account present with the entered details");
     }
 
-    let user_account_balance= parseFloat(data.accounts[user_index].balance);
-    if(user_account_balance<amount){
-      const transaction ={
-        "id": data.transactions.length+1,
-        "user_account_id": data.accounts[user_index].id,
-        "user_id": user_id,
-        "payee_account_id": data.accounts[payee_index].id,
-        "payee_id": data.users[payee_index_id].id,
-        "payee_name": data.users[payee_index_id].name,
-        "date": Date.now(),
-        "amount": amount,
-        "status": "Failed",
-        "is_debit": true
-      }
+    let user_account_balance = parseFloat(data.accounts[user_index].balance);
+    if (user_account_balance < amount) {
+      const transaction = {
+        id: data.transactions.length + 1,
+        user_account_id: data.accounts[user_index].id,
+        user_id: user_id,
+        payee_account_id: data.accounts[payee_index].id,
+        payee_id: data.users[payee_index_id].id,
+        payee_name: data.users[payee_index_id].name,
+        date: Date.now(),
+        amount: amount,
+        status: "Failed",
+        is_debit: true,
+      };
       data.transactions.push(transaction);
       writeToDB();
       return res.status(404).send("Insufficient Balance");
     }
-    let payee_account_balance=parseFloat(data.accounts[payee_index].balance)+amount;
+    let payee_account_balance =
+      parseFloat(data.accounts[payee_index].balance) + amount;
 
-    data.accounts[user_index].balance = user_account_balance-amount;
+    data.accounts[user_index].balance = user_account_balance - amount;
     data.accounts[payee_index].balance = payee_account_balance;
 
-    const transaction ={
-      "id": data.transactions.length+1,
-      "user_account_id": data.accounts[user_index].id,
-      "user_id": user_id,
-      "payee_account_id": data.accounts[payee_index].id,
-      "payee_id": data.users[payee_index_id].id,
-      "payee_name": data.users[payee_index_id].name,
-      "date": Date.now(),
-      "amount": amount,
-      "status": "Successful",
-      "is_debit": true
-    }
+    const transaction = {
+      id: data.transactions.length + 1,
+      user_account_id: data.accounts[user_index].id,
+      user_id: user_id,
+      payee_account_id: data.accounts[payee_index].id,
+      payee_id: data.users[payee_index_id].id,
+      payee_name: data.users[payee_index_id].name,
+      date: Date.now(),
+      amount: amount,
+      status: "Successful",
+      is_debit: true,
+    };
     data.transactions.push(transaction);
     writeToDB();
     return res.status(200).send("Sent Successfully");
-
   }
   return res.status(401).send("Request Declined");
 });
-
 
 server.post("/validate/mobile", (req, res) => {
   const phone_no = req.body.phone_no;
@@ -299,7 +308,7 @@ server.post("/login", (req, res) => {
       let accessToken;
       if (!user.token) {
         accessToken = Buffer.from(
-            `${Object.values(user)}${Math.random() * 9999999}`
+          `${Object.values(user)}${Math.random() * 9999999}`
         ).toString("base64");
       } else {
         accessToken = user.token;
@@ -330,11 +339,9 @@ server.use(
 server.get("/api/accounts/:id/transactions", (req, res) => {
   const accountId = parseInt(req.params.id);
   const userId = parseInt(req.user.id);
-  const accountIndex = data.accounts.findIndex(
-    (acc) => {
-    return acc.user_id === userId && acc.id === accountId
-  }
-  );
+  const accountIndex = data.accounts.findIndex((acc) => {
+    return acc.user_id === userId && acc.id === accountId;
+  });
   if (accountIndex === -1) {
     return res.status(404).send("Account not exist");
   }
@@ -377,12 +384,64 @@ server.get("/api/accounts/:id/transactions", (req, res) => {
   });
 });
 
-server.get("/api/payment/requested",(req,res)=>{
+server.get("/api/payment/requested", (req, res) => {
   const userId = req.user.id;
-  const list = data.requests.filter((r)=>{
-    return r.requested_to_user_id === userId;
-  }) || [];
+
+  const list =
+    data.requests.filter((r) => {
+      return r.requested_to_user_id === userId;
+    }) || [];
   return res.status(200).jsonp(list);
+});
+
+server.get("/api/transactions", (req, res) => {
+  const userId = parseInt(req.user.id);
+  const accountIndex = data.accounts.findIndex((acc) => {
+    return acc.user_id === userId;
+  });
+  if (accountIndex === -1) {
+    return res.status(404).send("Account not exist");
+  }
+  const query = req.query;
+  let page = 1,
+    pageSize = 10,
+    filterBy = null,
+    filterValue = null;
+    accountIds = [];
+  if (query.page > 1) {
+    page = query.page;
+  }
+  if (query.pageSize) {
+    pageSize = query.pageSize;
+  }
+  if (query.accountIds) {
+    accountIds = query.accountIds;
+  }
+  if (["is_debit", "status"].includes(query.filterBy) && query.filterValue) {
+    filterBy = query.filterBy;
+    if (query.filterBy === "is_debit") {
+      filterValue = query.filterValue === "true" ? true : false;
+    } else {
+      filterValue = query.filterValue;
+    }
+  }
+
+  var filteredTransactions = data.transactions.filter(
+    (transaction) =>
+      transaction.user_id === userId &&
+      accountIds.includes(transaction.user_account_id)
+  );
+
+  if (filterBy && filterValue !== null) {
+    filteredTransactions = filteredTransactions.filter(
+      (transaction) => transaction[filterBy] == filterValue
+    );
+  }
+
+  return res.status(200).jsonp({
+    data: paginate(filteredTransactions, pageSize, page),
+    total: filteredTransactions.length,
+  });
 });
 
 server.use(router);
