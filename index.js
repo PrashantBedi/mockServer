@@ -286,9 +286,10 @@ server.get("/api/validate/upi", (req, res) => {
     if (index == -1) {
       return res.status(404).send("Invalid UPI ID");
     }
+    const {id, name, dob, upi}  = data.users[index];
     return res
       .status(200)
-      .jsonp({ message: "Validation successfull", id: data.users[index].id });
+      .jsonp({ message: "Validation successful", user: {id, name, dob, upi} });
   }
   return res.sendStatus(400);
 });
@@ -407,7 +408,7 @@ server.get("/api/transactions", (req, res) => {
     pageSize = 10,
     filterBy = null,
     filterValue = null;
-    accountIds = [];
+  accountIds = [];
   if (query.page > 1) {
     page = query.page;
   }
