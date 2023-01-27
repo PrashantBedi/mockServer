@@ -427,10 +427,10 @@ server.get("/api/transactions", (req, res) => {
     }
   }
 
-  var filteredTransactions = data.transactions.filter(
-    (transaction) =>
-      transaction.user_id === userId &&
-      accountIds.includes(transaction.user_account_id)
+  let filteredTransactions = data.transactions.filter(
+      (transaction) =>
+          transaction.user_id === userId &&
+          accountIds.includes(transaction.user_account_id.toString())
   );
 
   if (filterBy && filterValue !== null) {
