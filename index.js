@@ -147,36 +147,30 @@ server.get("/api/search", (req, res) => {
 });
 
 server.get("/api/getTransactions", (req, res) => {
-  let PayeeUpi = req.query.payeeUpi;
-  let getPayeeUpi = decodeURIComponent(PayeeUpi);
-  let getUserId = req.user.id;
-  const payee_user_index = data.users.findIndex(
-    (user) => user.upi === getPayeeUpi
-  );
-  const payee_id = data.users[payee_user_index].id;
+  const { upi } = req.query;
+
+  let user_id = req.user.id;
+  const recipient = data.users.find((user) => user.upi === upi);
+
   let filteredList = [];
 
   data.transactions.forEach((transaction) => {
-    if (
-      transaction.payee_id === payee_id &&
-      transaction.user_id === getUserId
-    ) {
-      filteredList.push({
-        note: transaction.note,
-        amount: transaction.amount,
-        status: transaction.status,
-        isPayee: false,
-      });
-    } else if (
-      transaction.user_id === payee_id &&
-      transaction.payee_id === getUserId
-    ) {
-      filteredList.push({
-        note: transaction.note,
-        amount: transaction.amount,
-        status: transaction.status,
-        isPayee: true,
-      });
+    if (transaction.transaction_type === "send") {
+      if (
+        (transaction.user_id === user_id &&
+          transaction.payee_id === recipient.id) ||
+        (transaction.user_id === recipient.id &&
+          transaction.payee_id === user_id)
+      )
+        filteredList.push(transaction);
+    } else if (transaction.transaction_type === "request") {
+      if (
+        (transaction.user_id === user_id &&
+          transaction.payer_id === recipient.id) ||
+        (transaction.user_id === recipient.id &&
+          transaction.payer_id === user_id)
+      )
+        filteredList.push(transaction);
     }
   });
 
@@ -198,68 +192,59 @@ server.post("/verifyOtp", (req, res) => {
 
 server.post("/api/sendMoney", (req, res) => {
   const user_id = req.user.id;
-  const payee_upi = req.body.payee_upi;
-  const amount = req.body.amount;
+  const { payee_upi, amount, user_account_id, message } = req.body;
   if (user_id && payee_upi) {
-    //find_user_index_in_accountsDB
-    let user_index = data.accounts.findIndex(
-      (account) => account.user_id === user_id
+    //find user_account
+    let user_account = data.accounts.find(
+      (account) => account.id === user_account_id
     );
 
-    if (user_index === -1) {
+    if (!user_account) {
       return res.status(404).send("Entered bank number is invalid");
     }
-
-    //find_payee_id
-    let payee_index_id = data.users.findIndex((user) => user.upi === payee_upi);
-
-    //find_payee_index_in_accountsDB
-    let payee_index = data.accounts.findIndex(
-      (account) => account.user_id === data.users[payee_index_id].id
+    //find payee_account
+    let payee_account = data.accounts.find(
+      (account) => account.upi === payee_upi
     );
-
-    if (payee_index === -1) {
+    if (!payee_account) {
       return res
         .status(404)
         .send("No bank account present with the entered details");
     }
 
-    let user_account_balance = parseFloat(data.accounts[user_index].balance);
-    if (user_account_balance < amount) {
-      const transaction = {
-        id: data.transactions.length + 1,
-        user_account_id: data.accounts[user_index].id,
-        user_id: user_id,
-        payee_account_id: data.accounts[payee_index].id,
-        payee_id: data.users[payee_index_id].id,
-        payee_name: data.users[payee_index_id].name,
-        date: Date.now(),
-        amount: amount,
-        status: "Failed",
-        is_debit: true,
-      };
-      data.transactions.push(transaction);
+    const transaction = {
+      transaction_id: data.transactions.length + 1,
+      user_account_id: user_account.id,
+      user_id: user_id,
+      payee_account_id: payee_account.id,
+      payee_id: payee_account.user_id,
+      participant_name: payee_account.holder_name,
+      date: Date.now(),
+      amount: amount,
+      status: "success",
+      is_debit: true,
+      payer_id: user_id,
+      transaction_type: "send",
+      note: message,
+    };
+
+    if (user_account.balance < amount) {
+      data.transactions.push({ ...transaction, status: "failed" });
       writeToDB();
       return res.status(404).send("Insufficient Balance");
     }
-    let payee_account_balance =
-      parseFloat(data.accounts[payee_index].balance) + amount;
 
-    data.accounts[user_index].balance = user_account_balance - amount;
-    data.accounts[payee_index].balance = payee_account_balance;
+    data.accounts.forEach((account) => {
+      if (account.id === user_account.id) {
+        account.balance = account.balance - amount;
+      }
+    });
 
-    const transaction = {
-      id: data.transactions.length + 1,
-      user_account_id: data.accounts[user_index].id,
-      user_id: user_id,
-      payee_account_id: data.accounts[payee_index].id,
-      payee_id: data.users[payee_index_id].id,
-      payee_name: data.users[payee_index_id].name,
-      date: Date.now(),
-      amount: amount,
-      status: "Successful",
-      is_debit: true,
-    };
+    data.accounts.forEach((account) => {
+      if (account.id === payee_account.id) {
+        account.balance = account.balance + amount;
+      }
+    });
     data.transactions.push(transaction);
     writeToDB();
     return res.status(200).send("Sent Successfully");
@@ -286,10 +271,11 @@ server.get("/api/validate/upi", (req, res) => {
     if (index == -1) {
       return res.status(404).send("Invalid UPI ID");
     }
-    const {id, name, dob, upi}  = data.users[index];
-    return res
-      .status(200)
-      .jsonp({ message: "Validation successful", user: {id, name, dob, upi} });
+    const { id, name, dob, upi } = data.users[index];
+    return res.status(200).jsonp({
+      message: "Validation successful",
+      user: { id, name, dob, upi },
+    });
   }
   return res.sendStatus(400);
 });
@@ -428,9 +414,9 @@ server.get("/api/transactions", (req, res) => {
   }
 
   let filteredTransactions = data.transactions.filter(
-      (transaction) =>
-          transaction.user_id === userId &&
-          accountIds.includes(transaction.user_account_id.toString())
+    (transaction) =>
+      transaction.user_id === userId &&
+      accountIds.includes(transaction.user_account_id.toString())
   );
 
   if (filterBy && filterValue !== null) {

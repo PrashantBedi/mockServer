@@ -3,7 +3,7 @@
     {
       "id": 1,
       "token": "MSxbb2JqZWN0IE9iamVjdF0sYXNiaWx1ZnYyMzJnZiwxMTExMTExMTEx",
-      "phone_no": "9753197531",
+      "phone_no": "1111111111",
       "password": "abcd@123",
       "dob": "19/12/1998",
       "name": "David Warner Joe",
@@ -11,12 +11,21 @@
     },
     {
       "id": 2,
-      "phone_no": "1111111111",
+      "phone_no": "2222222222",
       "password": "abcd@123",
       "dob": "01/12/1997",
       "name": "John Wick",
-      "upi": "9753197531@okaxis",
+      "upi": "2222222222@okaxis",
       "token": "Miw5NzUzMTk3NTMxLDAxLzEyLzE5OTcsSm9obiBXaWNrLDk3NTMxOTc1MzFAb2theGlzNDU4NTMxMy40NTA4NzI2Nw=="
+    },
+    {
+      "id": 3,
+      "phone_no": "3333333333",
+      "password": "abcd@123",
+      "dob": "01/12/1997",
+      "name": "Tony Stark",
+      "upi": "3333333333@okaxis",
+      "token": "MxLDAxLzEyLzE5OTcsSm9obiBXaWNrLDk3NTMxOTc1MzFAb2theGlzNDU4NTMxMy40NTA4NzI2Nw=="
     }
   ],
   "otps": [
@@ -37,7 +46,8 @@
       "holder_name": "David Warner Joe",
       "account_type": "Savings",
       "account_number": "6098587393",
-      "balance": 10000.0
+      "balance": 10000.0,
+      "upi": "1111111111@okaxis"
     },
     {
       "id": 2,
@@ -55,7 +65,8 @@
       "holder_name": "John Wick",
       "account_type": "Savings",
       "account_number": "60985879652",
-      "balance": 13684
+      "balance": 13684,
+      "upi": "2222222222@okaxis"
     },
     {
       "id": 4,
@@ -65,6 +76,25 @@
       "account_type": "Savings",
       "account_number": "60985879653",
       "balance": 30576
+    },
+    {
+      "id": 5,
+      "user_id": 3,
+      "bank_name": "SBI",
+      "holder_name": "Tony Stark",
+      "account_type": "Savings",
+      "account_number": "60985879788",
+      "balance": 15175,
+      "upi": "3333333333@okaxis"
+    },
+    {
+      "id": 6,
+      "user_id": 3,
+      "bank_name": "HDFC",
+      "holder_name": "Tony Stark",
+      "account_type": "Savings",
+      "account_number": "60985879985",
+      "balance": 60076
     }
   ]
 }
