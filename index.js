@@ -265,9 +265,9 @@ server.post("/validate/mobile", (req, res) => {
 });
 
 server.get("/api/validate/upi", (req, res) => {
-  const upi = req.query.upi?.toLowerCase();
-  if (upi) {
-    let index = data.users.findIndex((user) => user.upi == upi);
+  const participant_upi = req.query.upi?.toLowerCase();
+  if (participant_upi) {
+    let index = data.users.findIndex((user) => user.upi == participant_upi);
     if (index == -1) {
       return res.status(404).send("Invalid UPI ID");
     }
