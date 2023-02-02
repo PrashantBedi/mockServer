@@ -219,7 +219,7 @@ server.post("/api/sendMoney", (req, res) => {
       payee_account_id: payee_account.id,
       payee_id: payee_account.user_id,
       participant_name: payee_account.holder_name,
-      date: Date.now(),
+      date: new Date(),
       amount: amount,
       status: "success",
       is_debit: true,
@@ -248,6 +248,49 @@ server.post("/api/sendMoney", (req, res) => {
     data.transactions.push(transaction);
     writeToDB();
     return res.status(200).send("Sent Successfully");
+  }
+  return res.status(401).send("Request Declined");
+});
+
+server.post("/api/requestMoney", (req, res) => {
+  const user_id = req.user.id;
+  const { payer_upi, amount, message } = req.body;
+  if (user_id && payer_upi) {
+    //find user_account
+    let user_account = data.accounts.find((account) => account.id === user_id);
+
+    if (!user_account) {
+      return res.status(404).send("Entered user details is invalid");
+    }
+    //find payee_account
+    let payer_account = data.accounts.find(
+      (account) => account.upi === payer_upi
+    );
+    if (!payer_account) {
+      return res
+        .status(404)
+        .send("No bank account present with the entered upi details");
+    }
+
+    const transaction = {
+      transaction_id: data.transactions.length + 1,
+      user_account_id: user_account.id,
+      user_id: user_id,
+      payee_account_id: user_account.id,
+      payee_id: user_id,
+      participant_name: payer_account.holder_name,
+      date: new Date(),
+      amount: amount,
+      status: "pending",
+      is_debit: false,
+      payer_id: payer_account.user_id,
+      transaction_type: "request",
+      note: message,
+    };
+
+    data.transactions.push(transaction);
+    writeToDB();
+    return res.status(200).send("requested Successfully");
   }
   return res.status(401).send("Request Declined");
 });
