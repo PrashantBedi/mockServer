@@ -177,6 +177,31 @@ server.get("/api/getTransactions", (req, res) => {
   return res.status(200).send(filteredList);
 });
 
+server.get("/api/getPaymentRequests", (req, res) => {
+
+  let user_id = req.user.id;
+
+  let filteredList = [];
+
+  data.transactions.forEach((transaction) => {
+    if(transaction.payer_id==user_id && transaction.transaction_type=="request" && transaction.status=="pending"){
+      const account=data.accounts.find((account)=>account.user_id==transaction.payee_id);
+      const response={
+        name:account.holder_name,
+        note:transaction.note,
+        amount:transaction.amount,
+        date:transaction.date,
+        upi:account.upi,
+      }
+      filteredList.push(response);
+    }
+  }
+  );
+  filteredList.sort((transaction1,transaction2)=>Date.parse(transaction2.date)-Date.parse(transaction1.date));
+  return res.status(200).send(filteredList);
+});
+
+
 server.post("/verifyOtp", (req, res) => {
   let index = data.otps.findIndex((otp) => otp.phone_no == req.body.phone_no);
 
