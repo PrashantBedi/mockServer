@@ -201,6 +201,34 @@ server.get("/api/getPaymentRequests", (req, res) => {
   return res.status(200).send(filteredList);
 });
 
+server.get("/api/getRecentPayments", (req, res) => {
+  let user_id = req.user.id;
+
+  let filteredList = [];
+  let listOfupi=[];
+
+  data.transactions.forEach((transaction) => {
+    if(transaction.payer_id==user_id)
+    {
+      let account= data.accounts.find((account)=>account.user_id==transaction.payee_id);
+      if(account!=-1)
+      {
+      const response= {
+          name: account.holder_name,
+          date: transaction.date,
+          upi:account.upi,
+        }
+        if(!listOfupi.includes(response.upi))
+        {
+          filteredList.push(response);
+          listOfupi.push(response.upi)
+        }
+      }}
+  });
+  filteredList.sort((transaction1,transaction2)=>Date.parse(transaction2.date)-Date.parse(transaction1.date));
+  return res.status(200).send(filteredList);
+});
+
 
 server.post("/verifyOtp", (req, res) => {
   let index = data.otps.findIndex((otp) => otp.phone_no == req.body.phone_no);
