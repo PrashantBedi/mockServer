@@ -367,10 +367,10 @@ server.get("/api/validate/upi", (req, res) => {
     if (index == -1) {
       return res.status(404).send("Invalid UPI ID");
     }
-    const { id, name, dob, upi } = data.users[index];
+    const { id, name, dob, upi ,phone_no} = data.users[index];
     return res.status(200).jsonp({
       message: "Validation successful",
-      user: { id, name, dob, upi },
+      user: { id, name, dob, upi ,phone_no},
     });
   }
   return res.sendStatus(400);
