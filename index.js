@@ -477,6 +477,50 @@ server.get("/api/payment/requested", (req, res) => {
   return res.status(200).jsonp(list);
 });
 
+server.put("/api/changeStatus", (req, res) => {
+    const query = req.query;
+    //query----->transactionId,amount,upi,transactionStatus
+
+    let transactionStatus = false;
+    if (query.status === "pay") {
+        data.accounts.forEach((account) => {
+            if (account.upi === req.user.upi) {
+                if (query.amount <= account.balance) {
+                    account.balance -= query.amount;
+                    transactionStatus = true;
+                }
+            }
+        })
+        if (transactionStatus) {
+            data.accounts.forEach((account) => {
+                if (account.upi === query.upi) {
+                    account.balance += query.amount;
+                }
+            })
+        }
+    }
+    data.transactions.forEach((transaction) => {
+        if (transaction.transaction_id == query.transaction_id) {
+            if (query.status === 'decline') {
+                transaction.status = "declined";
+            }
+            else {
+                if (transactionStatus) {
+
+                    transaction.status = "success";
+                } else {
+                    transaction.status = "failed";
+                }
+            }
+        }
+    });
+
+    if (!transactionStatus) {
+        return res.status(401).send("Insufficient balance");
+    }
+    return res.status(200).send("Successful");
+});
+
 server.get("/api/transactions", (req, res) => {
   const userId = parseInt(req.user.id);
   const accountIndex = data.accounts.findIndex((acc) => {
