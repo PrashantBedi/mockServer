@@ -477,31 +477,37 @@ server.get("/api/payment/requested", (req, res) => {
   return res.status(200).jsonp(list);
 });
 
-server.put("/api/changeStatus", (req, res) => {
-    const query = req.query;
+server.post("/api/changeStatus", (req, res) => {
+  const { upi, amount, status,transaction_id } = req.body;
+    // const amount = req.query.amount;
+    // const upi = req.query.upi;
+    // const status = req.query.status;
+    // const transaction_id = req.query.transaction_id;
     //query----->transactionId,amount,upi,transactionStatus
-
+console.log("queries",amount);
     let transactionStatus = false;
-    if (query.status === "pay") {
+    if (status === "pay") {
+      console.log("Hello in api");
         data.accounts.forEach((account) => {
             if (account.upi === req.user.upi) {
-                if (query.amount <= account.balance) {
-                    account.balance -= query.amount;
+                if (amount <= account.balance) {
+                    account.balance -= amount;
                     transactionStatus = true;
                 }
             }
         })
         if (transactionStatus) {
+          console.log("Hello transactinm");
             data.accounts.forEach((account) => {
-                if (account.upi === query.upi) {
-                    account.balance += query.amount;
+                if (account.upi === upi) {
+                    account.balance += amount;
                 }
             })
         }
     }
     data.transactions.forEach((transaction) => {
-        if (transaction.transaction_id == query.transaction_id) {
-            if (query.status === 'decline') {
+        if (transaction.transaction_id == transaction_id) {
+            if (status === 'decline') {
                 transaction.status = "declined";
             }
             else {
