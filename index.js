@@ -399,7 +399,7 @@ server.post("/login", (req, res) => {
       }
       data.users[index].token = accessToken;
       data.users[index].fcm_token = fcm_token;
-
+      user.fcm_token=fcm_token;
       writeToDB();
 
       return res.status(200).jsonp({ accessToken, user });
