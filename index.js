@@ -379,6 +379,7 @@ server.get("/api/validate/upi", (req, res) => {
 server.post("/login", (req, res) => {
   const phone_no = req.body.phone_no;
   const password = req.body.password;
+  const fcm_token = req.body.fcm_token;
 
   if (phone_no && password) {
     let index = data.users.findIndex((user) => user.phone_no == phone_no);
@@ -397,7 +398,10 @@ server.post("/login", (req, res) => {
         accessToken = user.token;
       }
       data.users[index].token = accessToken;
+      data.users[index].fcm_token = fcm_token;
+
       writeToDB();
+
       return res.status(200).jsonp({ accessToken, user });
     }
     return res.status(401).send("Incorrect password !");

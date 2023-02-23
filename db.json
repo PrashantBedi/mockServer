@@ -7,6 +7,7 @@
       "password": "abcd@123",
       "dob": "19/12/1998",
       "name": "David Warner Joe",
+      "fcm_token": "",
       "upi": "1111111111@okaxis"
     },
     {
@@ -16,6 +17,7 @@
       "dob": "01/12/1997",
       "name": "John Wick",
       "upi": "2222222222@okaxis",
+      "fcm_token": "",
       "token": "Miw5NzUzMTk3NTMxLDAxLzEyLzE5OTcsSm9obiBXaWNrLDk3NTMxOTc1MzFAb2theGlzNDU4NTMxMy40NTA4NzI2Nw=="
     },
     {
@@ -25,6 +27,7 @@
       "dob": "01/12/1997",
       "name": "Tony Stark",
       "upi": "3333333333@okaxis",
+      "fcm_token": "",
       "token": "MxLDAxLzEyLzE5OTcsSm9obiBXaWNrLDk3NTMxOTc1MzFAb2theGlzNDU4NTMxMy40NTA4NzI2Nw=="
     }
   ],
