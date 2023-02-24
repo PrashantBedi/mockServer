@@ -3,6 +3,8 @@ const server = jsonServer.create();
 const router = jsonServer.router(require("./db.js"));
 const middlewares = jsonServer.defaults();
 let data = require("./db.js");
+var request = require('request');
+const { users } = require("./db.js");
 
 server.use(middlewares);
 
@@ -580,6 +582,23 @@ server.get("/api/transactions", (req, res) => {
     total: filteredTransactions.length,
   });
 });
+
+ function sendNotification(reciever_id, notification_body){
+  const user =
+  data.users.find((users) => users.id === reciever_id) || [];
+  fetch("https://fcm.googleapis.com/fcm/send", {
+    method: "POST",
+    body: {
+      "to":user.fcm_token,
+      "notification": notification_body
+    },
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": process.env.FCM_API_TOKEN_FL,
+    },
+  });
+
+};
 
 server.use(router);
 server.listen(process.env.PORT || 3001, () => {
