@@ -3,7 +3,6 @@ const server = jsonServer.create();
 const router = jsonServer.router(require("./db.js"));
 const middlewares = jsonServer.defaults();
 let data = require("./db.js");
-var request = require('request');
 const { users } = require("./db.js");
 
 server.use(middlewares);
