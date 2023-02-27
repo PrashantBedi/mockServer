@@ -485,15 +485,8 @@ server.get("/api/payment/requested", (req, res) => {
 
 server.post("/api/changeStatus", (req, res) => {
   const { upi, amount, status,transaction_id } = req.body;
-    // const amount = req.query.amount;
-    // const upi = req.query.upi;
-    // const status = req.query.status;
-    // const transaction_id = req.query.transaction_id;
-    //query----->transactionId,amount,upi,transactionStatus
-console.log("queries",amount);
     let transactionStatus = false;
     if (status === "pay") {
-      console.log("Hello in api");
         data.accounts.forEach((account) => {
             if (account.upi === req.user.upi) {
                 if (amount <= account.balance) {
@@ -503,7 +496,6 @@ console.log("queries",amount);
             }
         })
         if (transactionStatus) {
-          console.log("Hello transactinm");
             data.accounts.forEach((account) => {
                 if (account.upi === upi) {
                     account.balance += amount;
