@@ -503,9 +503,12 @@ server.post("/api/changeStatus", (req, res) => {
         }
     }
     data.transactions.forEach((transaction) => {
+     console.log(transaction);
         if (transaction.transaction_id == transaction_id) {
+          
             if (status === 'decline') {
                 transaction.status = "declined";
+                transactionStatus=true
             }
             else {
                 if (transactionStatus) {
@@ -519,7 +522,8 @@ server.post("/api/changeStatus", (req, res) => {
     });
 
     if (!transactionStatus) {
-        return res.status(401).send("Insufficient balance");
+      console.log("hiii");
+        return res.status(401).send("Insufficient ");
     }
     return res.status(200).send("Successful");
 });
