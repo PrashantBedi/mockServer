@@ -82,6 +82,7 @@ server.post("/signup", (req, res) => {
     dob: req.body.dob,
     name: username,
     upi: req.body.phone_no + "@okaxis",
+    fcm_token: req.body.fcm_token,
   };
 
   data.users.push(user);
