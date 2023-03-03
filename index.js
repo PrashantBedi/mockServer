@@ -245,7 +245,8 @@ server.post("/verifyOtp", (req, res) => {
   }
 });
 
-server.post("/api/sendMoney", (req, res) => {
+server.post("/api/:t/sendMoney", (req, res) => {
+  const tech = parseInt(req.params.t);
   const user_id = req.user.id;
   const { payee_upi, amount, user_account_id, message } = req.body;
   if (user_id && payee_upi) {
@@ -254,6 +255,7 @@ server.post("/api/sendMoney", (req, res) => {
       (account) => account.id === user_account_id
     );
 
+  console.log("--> " + user_account)
     if (!user_account) {
       return res.status(404).send("Entered bank number is invalid");
     }
@@ -301,6 +303,7 @@ server.post("/api/sendMoney", (req, res) => {
       }
     });
     data.transactions.push(transaction);
+    pushNotification(transaction.payee_id, sendBody(transaction), tech)
     writeToDB();
     return res.status(200).send("Sent Successfully");
   }
@@ -345,6 +348,7 @@ server.post("/api/requestMoney", (req, res) => {
 
     data.transactions.push(transaction);
     writeToDB();
+    pushNotification(transaction.payer_id, requestBody(transaction))
     return res.status(200).send("requested Successfully");
   }
   return res.status(401).send("Request Declined");
@@ -579,9 +583,35 @@ server.get("/api/transactions", (req, res) => {
   });
 });
 
- function sendNotification(reciever_id, notification_body){
-  const user =
-  data.users.find((users) => users.id === reciever_id) || [];
+function sendBody(transaction) {
+  const user = data.users.find((users) => users.id === transaction.payee_id);
+  return {
+    "title": `Received ₹${transaction.amount}`,
+    "body": `${user.name} paid ₹${transaction.amount} to you.`,
+  }
+}
+
+function requestBody(transaction) {
+  const user = data.users.find((users) => users.id === transaction.payee_id);
+  return {
+    "title": `Requested ₹${transaction.amount}`,
+    "body": `${user.name} requested ₹${transaction.amount} from you.`,
+  }
+}
+
+function pushNotification(user_id, notification_body, tech){
+  const user = data.users.find((users) => users.id === user_id);
+
+  let fcmApiToken;
+
+  switch (tech) {
+    case "fl":
+      fcmApiToken = process.env.FCM_API_TOKEN_FL;
+      break;
+    default:
+      fcmApiToken = process.env.FCM_API_TOKEN_RN;
+  }
+
   fetch("https://fcm.googleapis.com/fcm/send", {
     method: "POST",
     body: {
@@ -590,10 +620,9 @@ server.get("/api/transactions", (req, res) => {
     },
     headers: {
       "Content-Type": "application/json",
-      "Authorization": process.env.FCM_API_TOKEN_FL,
+      "Authorization": fcmApiToken,
     },
   });
-
 };
 
 server.use(router);
