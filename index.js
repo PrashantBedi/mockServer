@@ -643,7 +643,9 @@ function pushNotification(user_id, notification_body, notification_data, tech){
     url: 'https://fcm.googleapis.com/fcm/send',
   };
 
-  axios(options).then(r => console.log(r.status));
+  if(user.fcm_token != null) {
+    axios(options)
+  }
 };
 
 server.use(router);
