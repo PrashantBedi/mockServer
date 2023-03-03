@@ -603,14 +603,14 @@ function requestBody(transaction) {
 function sendData(transaction) {
   const user = db.users.find((users) => users.id === transaction.payer_id);
   return {
-    // "upi": user.upi
+    "upi": user.upi
   }
 }
 
 function requestData(transaction) {
   const user = db.users.find((users) => users.id === transaction.payee_id);
   return {
-    // "upi": user.upi
+    "upi": user.upi
   }
 }
 
