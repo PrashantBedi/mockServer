@@ -310,7 +310,8 @@ server.post("/api/:t/sendMoney", (req, res) => {
   return res.status(401).send("Request Declined");
 });
 
-server.post("/api/requestMoney", (req, res) => {
+server.post("/api/:t/requestMoney", (req, res) => {
+  const tech = req.params.t;
   const user_id = req.user.id;
   const { payer_upi, amount, message } = req.body;
   if (user_id && payer_upi) {
@@ -348,7 +349,7 @@ server.post("/api/requestMoney", (req, res) => {
 
     data.transactions.push(transaction);
     writeToDB();
-    pushNotification(transaction.payer_id, requestBody(transaction))
+    pushNotification(transaction.payer_id, requestBody(transaction), tech)
     return res.status(200).send("requested Successfully");
   }
   return res.status(401).send("Request Declined");
