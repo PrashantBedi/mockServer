@@ -585,7 +585,7 @@ server.get("/api/transactions", (req, res) => {
 });
 
 function sendBody(transaction) {
-  const user = data.users.find((users) => users.id === transaction.payee_id);
+  const user = data.users.find((users) => users.id === transaction.payer_id);
   return {
     "title": `Received ₹${transaction.amount}`,
     "body": `${user.name} paid ₹${transaction.amount} to you.`,
