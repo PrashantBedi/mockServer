@@ -303,7 +303,7 @@ server.post("/api/:t/sendMoney", (req, res) => {
       }
     });
     data.transactions.push(transaction);
-    pushNotification(transaction.payee_id, sendBody(transaction), sendData(transaction), tech)
+    pushNotification(transaction.payee_id, sendBody(transaction), tech)
     writeToDB();
     return res.status(200).send("Sent Successfully");
   }
@@ -349,7 +349,7 @@ server.post("/api/:t/requestMoney", (req, res) => {
 
     data.transactions.push(transaction);
     writeToDB();
-    pushNotification(transaction.payer_id, requestBody(transaction), requestData(transaction), tech)
+    pushNotification(transaction.payer_id, requestBody(transaction), tech)
     return res.status(200).send("requested Successfully");
   }
   return res.status(401).send("Request Declined");
@@ -603,18 +603,18 @@ function requestBody(transaction) {
 function sendData(transaction) {
   const user = data.users.find((users) => users.id === transaction.payer_id);
   return {
-    "upi": user.upi
+    // "upi": user.upi
   }
 }
 
 function requestData(transaction) {
   const user = data.users.find((users) => users.id === transaction.payee_id);
   return {
-    "upi": user.upi
+    // "upi": user.upi
   }
 }
 
-function pushNotification(user_id, notification_body, notification_data, tech){
+function pushNotification(user_id, notification_body, tech){
   const user = data.users.find((users) => users.id === user_id);
 
   let fcmApiToken;
@@ -637,7 +637,6 @@ function pushNotification(user_id, notification_body, notification_data, tech){
     headers,
     data: {
       notification: notification_body,
-      data: notification_data,
       to: user.fcm_token,
     },
     url: 'https://fcm.googleapis.com/fcm/send',
