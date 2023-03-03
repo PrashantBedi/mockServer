@@ -7,7 +7,8 @@
       "password": "abcd@123",
       "dob": "19/12/1998",
       "name": "David Warner Joe",
-      "upi": "1111111111@okaxis"
+      "upi": "1111111111@okaxis",
+      "fcm_token": "fHZ4xz3HR7-IPtQSaZg8DL:APA91bHxKHEPIPP0GwWrlssabdKdbo5KxMGXxfbVWRlFIU-VTuV9dd1yKNX2xKg5ehY9seTC89Jcvx-Axtlj1el9oqQafFzg4xdJSqlS11Cj4qMBWbJ8gVIehvGDiWJEP01TExBTVt75"
     },
     {
       "id": 2,
@@ -16,7 +17,8 @@
       "dob": "01/12/1997",
       "name": "John Wick",
       "upi": "2222222222@okaxis",
-      "token": "Miw5NzUzMTk3NTMxLDAxLzEyLzE5OTcsSm9obiBXaWNrLDk3NTMxOTc1MzFAb2theGlzNDU4NTMxMy40NTA4NzI2Nw=="
+      "token": "Miw5NzUzMTk3NTMxLDAxLzEyLzE5OTcsSm9obiBXaWNrLDk3NTMxOTc1MzFAb2theGlzNDU4NTMxMy40NTA4NzI2Nw==",
+      "fcm_token": "eqqsvLiCT0CSKmLlPHD46B:APA91bH2QFxeJMaUf7XnhuwBz4KUJwmSxQdlurOxYdaV9M_vctwP_kYdsb5gFNXVps-7b6W0nBii9YziAx0ISYROwNab9kIg8LhKAni_UP-F6jANLZ5a7Uc6fBmjINJ2d_2Ejw0FpqdD"
     },
     {
       "id": 3,

@@ -4,6 +4,7 @@ const router = jsonServer.router(require("./db.js"));
 const middlewares = jsonServer.defaults();
 let data = require("./db.js");
 const { users } = require("./db.js");
+const axios = require("axios");
 
 server.use(middlewares);
 
@@ -611,19 +612,22 @@ function pushNotification(user_id, notification_body, tech){
       fcmApiToken = process.env.FCM_API_TOKEN_RN;
   }
 
-  fetch("https://fcm.googleapis.com/fcm/send", {
-    method: "POST",
-    body: {
-      "to":user.fcm_token,
-      "notification": notification_body
+  const headers = {
+    'Content-Type': 'application/json',
+    Authorization: fcmApiToken,
+  };
+
+  const options = {
+    method: 'POST',
+    headers,
+    data: {
+      notification: notification_body,
+      to: user.fcm_token,
     },
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": fcmApiToken,
-    },
-  }).then(value => {
-    console.log("Status Code -> " + value.status);
-  });
+    url: 'https://fcm.googleapis.com/fcm/send',
+  };
+
+  axios(options).then(r => console.log(r.status));
 };
 
 server.use(router);
