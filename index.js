@@ -246,7 +246,7 @@ server.post("/verifyOtp", (req, res) => {
 });
 
 server.post("/api/:t/sendMoney", (req, res) => {
-  const tech = parseInt(req.params.t);
+  const tech = req.params.t;
   const user_id = req.user.id;
   const { payee_upi, amount, user_account_id, message } = req.body;
   if (user_id && payee_upi) {
@@ -255,7 +255,6 @@ server.post("/api/:t/sendMoney", (req, res) => {
       (account) => account.id === user_account_id
     );
 
-  console.log("--> " + user_account)
     if (!user_account) {
       return res.status(404).send("Entered bank number is invalid");
     }
@@ -622,6 +621,8 @@ function pushNotification(user_id, notification_body, tech){
       "Content-Type": "application/json",
       "Authorization": fcmApiToken,
     },
+  }).then(value => {
+    console.log("Status Code -> " + value.status);
   });
 };
 
