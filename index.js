@@ -629,7 +629,7 @@ function pushNotification(user_id, notification_body, notification_data, tech){
 
   const headers = {
     'Content-Type': 'application/json',
-    Authorization: 'Bearer AAAAkwZyS9M:APA91bH82mNtR-6ep6dlqxmXWa3IzlNwg7JHUU0gZ__gPNUlJ8VjKfDESTiDbjuzDEKKfuQX3AKuwPDsnCXL_z7vpdfv298NO_q1ikZnHHfnQ9rc31DUm75YUeKAEt2s-ILex7rzrEVP',
+    Authorization: fcmApiToken,
   };
   const options = {
     method: 'POST',
