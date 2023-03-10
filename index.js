@@ -51,9 +51,7 @@ server.use("/api", (req, res, next) => {
 });
 
 server.post("/sendOtp", (req, res) => {
-  let index = db.users.findIndex(
-    (user) => user.phone_no == req.body.phone_no
-  );
+  let index = db.users.findIndex((user) => user.phone_no == req.body.phone_no);
 
   if (index != -1) {
     return res.sendStatus(403);
@@ -66,9 +64,7 @@ server.post("/sendOtp", (req, res) => {
 });
 
 server.post("/signup", (req, res) => {
-  let index = db.users.findIndex(
-    (user) => user.phone_no == req.body.phone_no
-  );
+  let index = db.users.findIndex((user) => user.phone_no == req.body.phone_no);
 
   if (index != -1) {
     return res.sendStatus(403);
@@ -181,26 +177,33 @@ server.get("/api/getTransactions", (req, res) => {
 });
 
 server.get("/api/getPaymentRequests", (req, res) => {
-
   let user_id = req.user.id;
 
   let filteredList = [];
 
   db.transactions.forEach((transaction) => {
-    if(transaction.payer_id==user_id && transaction.transaction_type=="request" && transaction.status=="pending"){
-      const account=db.accounts.find((account)=>account.user_id==transaction.payee_id);
-      const response={
-        name:account.holder_name,
-        note:transaction.note,
-        amount:transaction.amount,
-        date:transaction.date,
-        upi:account.upi,
-      }
+    if (
+      transaction.payer_id == user_id &&
+      transaction.transaction_type == "request" &&
+      transaction.status == "pending"
+    ) {
+      const account = db.accounts.find(
+        (account) => account.user_id == transaction.payee_id
+      );
+      const response = {
+        name: account.holder_name,
+        note: transaction.note,
+        amount: transaction.amount,
+        date: transaction.date,
+        upi: account.upi,
+      };
       filteredList.push(response);
     }
-  }
+  });
+  filteredList.sort(
+    (transaction1, transaction2) =>
+      Date.parse(transaction2.date) - Date.parse(transaction1.date)
   );
-  filteredList.sort((transaction1,transaction2)=>Date.parse(transaction2.date)-Date.parse(transaction1.date));
   return res.status(200).send(filteredList);
 });
 
@@ -208,30 +211,32 @@ server.get("/api/getRecentPayments", (req, res) => {
   let user_id = req.user.id;
 
   let filteredList = [];
-  let listOfupi=[];
+  let listOfupi = [];
 
   db.transactions.forEach((transaction) => {
-    if(transaction.payer_id==user_id)
-    {
-      let account= db.accounts.find((account)=>account.user_id==transaction.payee_id);
-      if(account!=-1)
-      {
-      const response= {
+    if (transaction.payer_id == user_id) {
+      let account = db.accounts.find(
+        (account) => account.user_id == transaction.payee_id
+      );
+      if (account != -1) {
+        const response = {
           name: account.holder_name,
           date: transaction.date,
-          upi:account.upi,
-        }
-        if(!listOfupi.includes(response.upi))
-        {
+          upi: account.upi,
+        };
+        if (!listOfupi.includes(response.upi)) {
           filteredList.push(response);
-          listOfupi.push(response.upi)
+          listOfupi.push(response.upi);
         }
-      }}
+      }
+    }
   });
-  filteredList.sort((transaction1,transaction2)=>Date.parse(transaction2.date)-Date.parse(transaction1.date));
+  filteredList.sort(
+    (transaction1, transaction2) =>
+      Date.parse(transaction2.date) - Date.parse(transaction1.date)
+  );
   return res.status(200).send(filteredList);
 });
-
 
 server.post("/verifyOtp", (req, res) => {
   let index = db.otps.findIndex((otp) => otp.phone_no == req.body.phone_no);
@@ -303,7 +308,12 @@ server.post("/api/:t/sendMoney", (req, res) => {
       }
     });
     db.transactions.push(transaction);
-    pushNotification(transaction.payee_id, sendBody(transaction), sendData(transaction), tech)
+    pushNotification(
+      transaction.payee_id,
+      sendBody(transaction),
+      sendData(transaction),
+      tech
+    );
     writeToDB();
     return res.status(200).send("Sent Successfully");
   }
@@ -349,7 +359,12 @@ server.post("/api/:t/requestMoney", (req, res) => {
 
     db.transactions.push(transaction);
     writeToDB();
-    pushNotification(transaction.payer_id, requestBody(transaction), requestData(transaction), tech)
+    pushNotification(
+      transaction.payer_id,
+      requestBody(transaction),
+      requestData(transaction),
+      tech
+    );
     return res.status(200).send("requested Successfully");
   }
   return res.status(401).send("Request Declined");
@@ -374,10 +389,10 @@ server.get("/api/validate/upi", (req, res) => {
     if (index == -1) {
       return res.status(404).send("Invalid UPI ID");
     }
-    const { id, name, dob, upi ,phone_no} = db.users[index];
+    const { id, name, dob, upi, phone_no } = db.users[index];
     return res.status(200).jsonp({
       message: "Validation successful",
-      user: { id, name, dob, upi ,phone_no},
+      user: { id, name, dob, upi, phone_no },
     });
   }
   return res.sendStatus(400);
@@ -406,7 +421,7 @@ server.post("/login", (req, res) => {
       }
       db.users[index].token = accessToken;
       db.users[index].fcm_token = fcm_token;
-      user.fcm_token=fcm_token;
+      user.fcm_token = fcm_token;
       writeToDB();
 
       return res.status(200).jsonp({ accessToken, user });
@@ -489,49 +504,44 @@ server.get("/api/payment/requested", (req, res) => {
 });
 
 server.post("/api/changeStatus", (req, res) => {
-  const { upi, amount, status,transaction_id } = req.body;
-    let transactionStatus = false;
-    if (status === "pay") {
-        db.accounts.forEach((account) => {
-            if (account.upi === req.user.upi) {
-                if (amount <= account.balance) {
-                    account.balance -= amount;
-                    transactionStatus = true;
-                }
-            }
-        })
-        if (transactionStatus) {
-            db.accounts.forEach((account) => {
-                if (account.upi === upi) {
-                    account.balance += amount;
-                }
-            })
+  const { upi, amount, status, transaction_id } = req.body;
+  let transactionStatus = false;
+  if (status === "pay") {
+    db.accounts.forEach((account) => {
+      if (account.upi === req.user.upi) {
+        if (amount <= account.balance) {
+          account.balance -= amount;
+          transactionStatus = true;
         }
-    }
-    db.transactions.forEach((transaction) => {
-     console.log(transaction);
-        if (transaction.transaction_id == transaction_id) {
-          
-            if (status === 'decline') {
-                transaction.status = "declined";
-                transactionStatus=true
-            }
-            else {
-                if (transactionStatus) {
-
-                    transaction.status = "success";
-                } else {
-                    transaction.status = "failed";
-                }
-            }
-        }
+      }
     });
-
-    if (!transactionStatus) {
-      console.log("hiii");
-        return res.status(401).send("Insufficient ");
+    if (transactionStatus) {
+      db.accounts.forEach((account) => {
+        if (account.upi === upi) {
+          account.balance += amount;
+        }
+      });
     }
-    return res.status(200).send("Successful");
+  }
+  db.transactions.forEach((transaction) => {
+    if (transaction.transaction_id == transaction_id) {
+      if (status === "decline") {
+        transaction.status = "declined";
+        transactionStatus = true;
+      } else {
+        if (transactionStatus) {
+          transaction.status = "success";
+        } else {
+          transaction.status = "failed";
+        }
+      }
+    }
+  });
+
+  if (!transactionStatus) {
+    return res.status(401).send("Insufficient ");
+  }
+  return res.status(200).send("Successful");
 });
 
 server.get("/api/transactions", (req, res) => {
@@ -587,34 +597,34 @@ server.get("/api/transactions", (req, res) => {
 function sendBody(transaction) {
   const user = db.users.find((users) => users.id === transaction.payer_id);
   return {
-    "title": `Received ₹${transaction.amount}`,
-    "body": `${user.name} paid ₹${transaction.amount} to you.`,
-  }
+    title: `Received ₹${transaction.amount}`,
+    body: `${user.name} paid ₹${transaction.amount} to you.`,
+  };
 }
 
 function requestBody(transaction) {
   const user = db.users.find((users) => users.id === transaction.payee_id);
   return {
-    "title": `Requested ₹${transaction.amount}`,
-    "body": `${user.name} requested ₹${transaction.amount} from you.`,
-  }
+    title: `Requested ₹${transaction.amount}`,
+    body: `${user.name} requested ₹${transaction.amount} from you.`,
+  };
 }
 
 function sendData(transaction) {
   const user = db.users.find((users) => users.id === transaction.payer_id);
   return {
-    "upi": user.upi
-  }
+    upi: user.upi,
+  };
 }
 
 function requestData(transaction) {
   const user = db.users.find((users) => users.id === transaction.payee_id);
   return {
-    "upi": user.upi
-  }
+    upi: user.upi,
+  };
 }
 
-function pushNotification(user_id, notification_body, notification_data, tech){
+function pushNotification(user_id, notification_body, notification_data, tech) {
   const user = db.users.find((users) => users.id === user_id);
 
   let fcmApiToken;
@@ -628,24 +638,24 @@ function pushNotification(user_id, notification_body, notification_data, tech){
   }
 
   const headers = {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
     Authorization: fcmApiToken,
   };
   const options = {
-    method: 'POST',
+    method: "POST",
     headers,
     data: {
       to: user.fcm_token,
       notification: notification_body,
       data: notification_data,
     },
-    url: 'https://fcm.googleapis.com/fcm/send',
+    url: "https://fcm.googleapis.com/fcm/send",
   };
 
-  if(user.fcm_token != null) {
-    axios(options)
+  if (user.fcm_token != null) {
+    axios(options);
   }
-};
+}
 
 server.use(router);
 server.listen(process.env.PORT || 3001, () => {
