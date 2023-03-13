@@ -7,7 +7,8 @@
       "password": "abcd@123",
       "dob": "19/12/1998",
       "name": "David Warner Joe",
-      "upi": "1111111111@okaxis"
+      "upi": "1111111111@okaxis",
+      "fcm_token": "dhlza1UcSweYTGyHSbTfic:APA91bHIlBkkJPtzoeOT_fSXUd40UR9QE2pISYEs_rTyeZ4A7dAN-fgY4fbGNkalah-dwN4k3OpvnrWX1W0F0_ih-P8ZDgVKH71mgKh4QCnzcvUFBnCIWtYKVCy6qz-vxOYBum6XM6EL"
     },
     {
       "id": 2,
