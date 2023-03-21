@@ -18,7 +18,7 @@
       "name": "John Wick",
       "upi": "2222222222@okaxis",
       "token": "Miw5NzUzMTk3NTMxLDAxLzEyLzE5OTcsSm9obiBXaWNrLDk3NTMxOTc1MzFAb2theGlzNDU4NTMxMy40NTA4NzI2Nw==",
-      "fcm_token": "eiVEOUabTVmJIzFcJYWKxG:APA91bFtfU2Qcf9QAG8Juu3D5chYv8kd8C1aUJuUuByutg_q3dlzsJEzeD-c9pJYU-PTp72swzc7zwu1QVeY60qqfAyONh0ZPeAMG7-RUcZLVT4iC3qwlHwF0zYn-hFZp2BQbX3MzWoU"
+      "fcm_token": "ckUZE8G0TzeQ0auazfweFL:APA91bHCa6tb9b6eCisRx0wujbd_Se8dLTMnIGIMhaoc-2tCdx2pjo8EKEPbDr2NuPhn6JP4nvvwSO3svm_cI3VEwSYcquDXBxRgvyqHOj6VYzLfLJGv_Z3IItNarJSN4mwxJs25NOKa"
     },
     {
       "id": 3,
@@ -27,7 +27,8 @@
       "dob": "01/12/1997",
       "name": "Tony Stark",
       "upi": "3333333333@okaxis",
-      "token": "MxLDAxLzEyLzE5OTcsSm9obiBXaWNrLDk3NTMxOTc1MzFAb2theGlzNDU4NTMxMy40NTA4NzI2Nw=="
+      "token": "MxLDAxLzEyLzE5OTcsSm9obiBXaWNrLDk3NTMxOTc1MzFAb2theGlzNDU4NTMxMy40NTA4NzI2Nw==",
+      "fcm_token": "e5UdFf2gS-yWOdwGac3qSt:APA91bHXwbpuCFIxx0TmUc9Thxoq00ytOWUAuh6rtj9x36To_M7sEBiAbCs_748zwf4LPvF08U4tnoOeZAg8fbarhB-7bua2W95FwYmX_4gw_WnqV_jLNmnJSG0rrcGlZaDvYaUTYuNu"
     }
   ],
   "otps": [
